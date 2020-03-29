@@ -26,7 +26,7 @@ def create_crawler(filter_words, feed_urls):
                       seconds=3600)
 
     # Shut down the scheduler when exiting the app
-    atexit.register(lambda: scheduler.shutdown())
+    # atexit.register(lambda: scheduler.shutdown())
 
     # crawl once on startup
     crawl_and_persist_data()
