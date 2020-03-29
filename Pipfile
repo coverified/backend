@@ -21,6 +21,7 @@ feedparser = "*"
 lxml = "*"
 flask-restful = "*"
 flask-limiter = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"

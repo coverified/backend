@@ -4,7 +4,6 @@ import sys
 from dotenv import load_dotenv, find_dotenv
 
 from src.app import create_app
-# from src.rss.rss_crawler import create_crawler
 
 load_dotenv(find_dotenv())
 
