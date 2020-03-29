@@ -43,9 +43,9 @@ def create_app(env_name):
     app.register_blueprint(feed_blueprint, url_prefix='/api/v1/feed')
 
     # register and start the crawler
-    # keywords = json.loads(config.get("crawler", "keywords"))
-    # feeds = json.loads(config.get("crawler", "feeds"))
-    # create_crawler(keywords, feeds)
+    keywords = json.loads(config.get("crawler", "keywords"))
+    feeds = json.loads(config.get("crawler", "feeds"))
+    create_crawler(keywords, feeds)
 
     # limit the number of api calls
     Limiter(
