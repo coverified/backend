@@ -1,6 +1,7 @@
 # /src/views/FeedView
 
-from flask import Blueprint, request, jsonify, Response, url_for
+from flask import Blueprint, request, json, Response
+from dateutil.parser import parse
 
 from src.models import FeedSchema, FeedDataModel
 
@@ -8,32 +9,19 @@ feed_api = Blueprint('feed_api', __name__)
 feed_schema = FeedSchema()
 
 
-# @feed_api.route('/<int:tid>', methods=['GET'])
-# def fetch_entry(tid):
-#     """
-#     Get a single feed entry based on its table id
-#     :param tid: the table id for the entry
-#     :return: the found entry as json string or an error string
-#     """
-#     feed = FeedDataModel.get_entry(tid)
-#     if not feed:
-#         return custom_response("", 400)
-#     feed_data = feed_schema.dumps(feed)
-#     return custom_response(feed_data, 200)
-
 @feed_api.route('/', methods=['GET'])
-def test():
+def feed_request():
     try:
-        timestamp = request.args.get("timestamp")  # todo parse
-        limit = request.args.get("limit")  # todo parse
-    except ValueError:
-        return "", 400  # todo check that all exceptions are catched
-    #     feed = FeedDataModel.get_entry(tid)
-    #     if not feed:
-    #         return custom_response("", 400)
-    #     feed_data = feed_schema.dumps(feed)
-    #     return custom_response(feed_data, 200)
-    return "works", 200
+        timestamp = parse(request.args.get("timestamp"), fuzzy=True)
+        limit = int(request.args.get("limit"))
+    except (ValueError, OverflowError) as e:
+        return custom_response(str(e), 400)
+
+    feed_elements = FeedDataModel.get_entries_of_last_hour(timestamp, limit)
+    if not feed_elements:
+        return custom_response([], 400)  # return empty list
+    feed_data = [feed_schema.dump(element) for element in feed_elements]
+    return custom_response(feed_data, 200)  # return data
 
 
 def custom_response(res, status_code):
@@ -45,6 +33,6 @@ def custom_response(res, status_code):
     """
     return Response(
         mimetype="application/json",
-        response=res,
+        response=json.dumps(res),
         status=status_code
     )

@@ -1,7 +1,7 @@
 # src/models/FeedDataModel.py
 from . import db
 from marshmallow import fields, Schema
-import datetime
+import datetime as dt
 
 
 class FeedDataModel(db.Model):
@@ -30,8 +30,8 @@ class FeedDataModel(db.Model):
         self.title = data.get('title')
         self.content = data.get('content')
         self.url = data.get('url')
-        self.created_at = datetime.datetime.utcnow()
-        self.modified_at = datetime.datetime.utcnow()
+        self.created_at = dt.datetime.utcnow()
+        self.modified_at = dt.datetime.utcnow()
 
     def save(self):
         db.session.add(self)
@@ -41,8 +41,10 @@ class FeedDataModel(db.Model):
         return '<id {}>'.format(self.id)
 
     @staticmethod
-    def get_entry(tid):
-        return FeedDataModel.query.get(tid)
+    def get_entries_of_last_hour(date_time, limit):
+        start = date_time + dt.timedelta(hours=-1)
+        return FeedDataModel.query.filter(
+            FeedDataModel.timestamp.between(start, date_time)).limit(limit).all()
 
 
 class FeedSchema(Schema):

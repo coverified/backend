@@ -1,13 +1,17 @@
 # src/app.py
 
 from flask import Flask
-from flask_restful import Api
 
 from .config import app_config
+from .debug import sql_debug
 from .models import db
 
 # import feed_api blueprint
 from .views.FeedView import feed_api as feed_blueprint
+
+# api limiter
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 
 def create_app(env_name):
@@ -17,18 +21,24 @@ def create_app(env_name):
 
     # app initialization
     app = Flask(__name__)
-
     app.config.from_object(app_config[env_name])
+
+    # debug
+    if app_config[env_name].DEBUG:
+        app.after_request(sql_debug)
 
     # initializing db
     db.init_app(app)
 
-    # @feed_blueprint.route('/movie1/<page_num>')
-    # def movie2(page_num=1):
-    #     return str(page_num)
-
+    # register the feed api blueprint
     app.register_blueprint(feed_blueprint, url_prefix='/api/v1/feed')
 
+    # limit the number of api calls
+    Limiter(
+        app,
+        key_func=get_remote_address,
+        default_limits=["20000 per day", "500 per hour"]
+    )
 
     @app.route('/', methods=['GET'])
     def index():

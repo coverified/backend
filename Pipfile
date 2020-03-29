@@ -20,6 +20,7 @@ feedbarser = "*"
 feedparser = "*"
 lxml = "*"
 flask-restful = "*"
+flask-limiter = "*"
 
 [requires]
 python_version = "3.7"
