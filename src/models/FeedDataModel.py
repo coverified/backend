@@ -14,7 +14,7 @@ class FeedDataModel(db.Model):
 
     tid = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, nullable=False)
-    title = db.Column(db.String(128), unique=True, nullable=False)
+    title = db.Column(db.String, unique=True, nullable=False)
     content = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)
 
@@ -25,7 +25,6 @@ class FeedDataModel(db.Model):
         FeedDataModel class constructor
         """
 
-        self.tid = data.get('tid')
         self.timestamp = data.get('timestamp')
         self.title = data.get('title')
         self.content = data.get('content')
@@ -40,11 +39,16 @@ class FeedDataModel(db.Model):
     def __repr(self):
         return '<id {}>'.format(self.id)
 
+    def persist_uniques(self):
+        # persists only if an element with this title does not exist yet in the database
+        exist = FeedDataModel.query.filter(FeedDataModel.title == self.title).scalar() is not None
+        if not exist:
+            self.save()
+
     @staticmethod
-    def get_entries_of_last_hour(date_time, limit):
-        start = date_time + dt.timedelta(hours=-1)
+    def get_entries(start_date, end_date, limit):
         return FeedDataModel.query.filter(
-            FeedDataModel.timestamp.between(start, date_time)).limit(limit).all()
+            FeedDataModel.timestamp.between(start_date, end_date)).limit(limit).all()
 
 
 class FeedSchema(Schema):

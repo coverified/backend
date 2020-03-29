@@ -1,5 +1,6 @@
 # /src/views/FeedView
 
+import os
 from flask import Blueprint, request, json, Response
 from dateutil.parser import parse
 
@@ -14,12 +15,13 @@ feed_schema = FeedSchema()
 @feed_api.route('/', methods=['GET'])
 def feed_request():
     try:
-        timestamp = parse(request.args.get("timestamp"), fuzzy=True)
+        start_date = parse(request.args.get("start"), fuzzy=True)
+        end_date = parse(request.args.get("end"), fuzzy=True)
         limit = int(request.args.get("limit"))
-    except (ValueError, OverflowError) as e:
+    except (ValueError, OverflowError, TypeError) as e:
         return custom_response(str(e), 400)
 
-    feed_elements = FeedDataModel.get_entries_of_last_hour(timestamp, limit)
+    feed_elements = FeedDataModel.get_entries(start_date, end_date, limit)
     if not feed_elements:
         return custom_response([], 400)  # return empty list
     feed_data = [feed_schema.dump(element) for element in feed_elements]
