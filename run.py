@@ -4,7 +4,7 @@ import sys
 from dotenv import load_dotenv, find_dotenv
 
 from src.app import create_app
-from src.rss.crawler import create_crawler
+from src.rss.rss_crawler import create_crawler
 
 load_dotenv(find_dotenv())
 
@@ -16,12 +16,10 @@ if env_name is None:  # todo more sanity checks for the whole config
 # start the app
 app = create_app(env_name)
 
-# start the scheduler
-# rss_crawler = create_crawler().start()
+# start rss crawler scheduler
+rss_crawler = create_crawler().start()
 
 if __name__ == '__main__':
     port = os.getenv('API_PORT')
     # run backend app
-    app.run(host='0.0.0.0', port=port, use_reloader=False)
-
-    # run scheduler for rss feeds
+    app.run(host='127.0.0.1', port=port, use_reloader=False)
