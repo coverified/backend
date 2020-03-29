@@ -15,7 +15,8 @@ if env_name is None:  # todo more sanity checks for the whole config
 # start the app
 app = create_app(env_name)
 
+
 if __name__ == '__main__':
     port = os.getenv('API_PORT')
     # run backend app
-    app.run(host='127.0.0.1', port=port, use_reloader=False)
+    app.run(host='0.0.0.0', port=port, use_reloader=False)

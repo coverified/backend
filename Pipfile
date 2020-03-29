@@ -8,11 +8,9 @@ verify_ssl = true
 [packages]
 flask = "*"
 flask-sqlalchemy = "*"
-psycopg2 = "*"
 flask-migrate = "*"
 flask-script = "*"
 marshmallow = "*"
-flask-bcrypt = "*"
 pyjwt = "*"
 python-dotenv = "*"
 apscheduler = "*"
@@ -21,6 +19,7 @@ lxml = "*"
 flask-restful = "*"
 flask-limiter = "*"
 gunicorn = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.7"

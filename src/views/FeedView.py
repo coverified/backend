@@ -6,6 +6,8 @@ from dateutil.parser import parse
 
 import datetime as dt
 
+from sqlalchemy.exc import OperationalError
+
 from src.models import FeedSchema, FeedDataModel
 
 feed_api = Blueprint('feed_api', __name__)
@@ -21,7 +23,11 @@ def feed_request():
     except (ValueError, OverflowError, TypeError) as e:
         return custom_response(str(e), 400)
 
-    feed_elements = FeedDataModel.get_entries(start_date, end_date, limit)
+    try:
+        feed_elements = FeedDataModel.get_entries(start_date, end_date, limit)
+    except OperationalError as e:
+        return custom_response(str(e), 400)
+
     if not feed_elements:
         return custom_response([], 400)  # return empty list
     feed_data = [feed_schema.dump(element) for element in feed_elements]

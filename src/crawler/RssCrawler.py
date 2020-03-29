@@ -4,6 +4,7 @@ import atexit
 
 import feedparser
 import lxml.html
+import datetime as dt
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -26,10 +27,11 @@ def create_crawler(filter_words, feed_urls):
                       seconds=3600)
 
     # Shut down the scheduler when exiting the app
-    # atexit.register(lambda: scheduler.shutdown())
+    atexit.register(lambda: scheduler.shutdown())
 
     # crawl once on startup
-    crawl_and_persist_data()
+    for job in scheduler.get_jobs():
+        job.modify(next_run_time=dt.datetime.utcnow())
 
     scheduler.start()
 
