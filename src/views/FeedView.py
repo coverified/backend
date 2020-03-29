@@ -3,6 +3,8 @@
 from flask import Blueprint, request, json, Response
 from dateutil.parser import parse
 
+import datetime as dt
+
 from src.models import FeedSchema, FeedDataModel
 
 feed_api = Blueprint('feed_api', __name__)
@@ -22,6 +24,14 @@ def feed_request():
         return custom_response([], 400)  # return empty list
     feed_data = [feed_schema.dump(element) for element in feed_elements]
     return custom_response(feed_data, 200)  # return data
+
+
+@feed_api.after_request
+def add_header(response):
+    response.cache_control.max_age = 3600
+    if 'Expires' not in response.headers:  # set expires date in iso format
+        response.headers['Expires'] = dt.datetime.utcnow().isoformat()
+    return response
 
 
 def custom_response(res, status_code):
