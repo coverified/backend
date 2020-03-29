@@ -3,7 +3,7 @@
 from flask import Flask
 
 from .config import app_config
-from .debug import sql_debug
+from .debug.sql_query_debugger import sql_debug
 from .models import db
 
 # import feed_api blueprint
