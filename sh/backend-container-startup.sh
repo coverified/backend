@@ -6,7 +6,7 @@ echo "> Running start script..."
 
 echo "> Wait for database on $DATABASE_SERVER to be ready..."
 
-$WORKDIR/sh/wait-for-it.sh $DATABASE_SERVER:5432 --timeout=120
+[ ! -z "$DATABASE_SERVER" ] && $WORKDIR/sh/wait-for-it.sh $DATABASE_SERVER:5432 --timeout=120
 
 echo "> database seems to be ready..."
 
