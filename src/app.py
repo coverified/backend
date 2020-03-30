@@ -42,7 +42,7 @@ def create_app(env_name):
     # register the feed api blueprint
     app.register_blueprint(feed_blueprint, url_prefix='/api/v1/feed')
 
-    # register and start the crawler
+    # start the crawler
     keywords = json.loads(config.get("crawler", "keywords"))
     feeds = json.loads(config.get("crawler", "feeds"))
     create_crawler(keywords, feeds)
@@ -53,12 +53,5 @@ def create_app(env_name):
         key_func=get_remote_address,
         default_limits=["20000 per day", "500 per hour"]
     )
-
-    # @app.route('/', methods=['GET'])
-    # def index():
-    #     """
-    #     example endpoint
-    #     """
-    #     return 'Congratulations! Your part 2 endpoint is working'  # todo JH
 
     return app
