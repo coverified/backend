@@ -54,4 +54,11 @@ def create_app(env_name):
         default_limits=["20000 per day", "500 per hour"]
     )
 
+    @app.route('/', methods=['GET'])
+    def index():
+        """
+        main endpoint -> empty
+        """
+        return ''
+
     return app
