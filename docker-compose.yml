@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  coverified-backend:
+    build: .
+    command: gunicorn --bin 0.0.0.0:5480 main:app
+    #    volumes:
+    #      - ./services/web/:/usr/src/app/
+    #    ports:
+    #      - 127.0.0.1:5480:5480
+    expose:
+      - 5480 # internally expose 5480 port to nginx container (and all others)
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      # startup script config variables
+      DATABASE_SERVER: db
+  db:
+    image: postgres:12
+    #    volumes:
+    #      - postgres_data:/var/lib/postgresql/data/
+    environment: # todo adapt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - coverified-backend
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+#  certbot:
+#    image: certbot/certbot
+#    volumes:
+#      - ./data/certbot/conf:/etc/letsencrypt
+#      - ./data/certbot/www:/var/www/certbot
+
