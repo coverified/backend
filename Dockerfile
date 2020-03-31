@@ -40,7 +40,7 @@ RUN ["chmod", "+x", "/wait-for-it.sh"]
 ADD src /app/src
 COPY ./src/ /app/src
 COPY .env /app
-COPY manage_db.py /app
+COPY manage.py /app
 COPY Pipfile /app
 COPY Pipfile.lock /app
 COPY config.cfg /app

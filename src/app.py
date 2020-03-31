@@ -29,7 +29,7 @@ def create_app(env_name):
 
     # read config
     config = configparser.ConfigParser()
-    config.read('config.cfg')
+    config.read('cfg/config.cfg')
 
     # debug
     if app_config[env_name].DEBUG:

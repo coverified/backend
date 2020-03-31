@@ -6,7 +6,11 @@ import feedparser
 import lxml.html
 import datetime as dt
 
+import logging as log
+
 from apscheduler.schedulers.background import BackgroundScheduler
+from sqlalchemy.exc import OperationalError as SQOperationalError
+from psycopg2 import OperationalError as PsyOperationalError
 
 from src.models import FeedDataModel
 
@@ -37,13 +41,16 @@ def create_crawler(filter_words, feed_urls):
 
 
 def crawl_and_persist_data():
-    rss_data_list = crawl_rss_data()
+    try:
+        rss_data_list = crawl_rss_data()
 
-    for feed_entry in rss_data_list:
-        build_feed_data_model_from_feed(feed_entry)
+        for feed_entry in rss_data_list:
+            build_feed_data_and_persist(feed_entry)
+    except (SQOperationalError, PsyOperationalError) as e:
+        log.error("Persisting data from crawled feed failed with exception: " + str(e))
 
 
-def build_feed_data_model_from_feed(feed_entry):
+def build_feed_data_and_persist(feed_entry):
     timestamp = feed_entry.published  # todo parse
     title = feed_entry.title
     content = feed_entry.summary
