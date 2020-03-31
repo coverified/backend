@@ -12,7 +12,12 @@ echo "> database seems to be ready..."
 
 echo "> Migrating database model..."
 
+echo $WORKDIR
+echo pwd
+
 cd $WORKDIR
+echo pwd
+
 python manage_db.py db init
 python manage_db.py db migrate
 python manage_db.py db upgrade
