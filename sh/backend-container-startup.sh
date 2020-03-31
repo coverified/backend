@@ -10,15 +10,13 @@ echo "> Wait for database on $DATABASE_SERVER to be ready..."
 
 echo "> database seems to be ready..."
 
-echo "> Migrating database model..."
+echo "> Upgrading database model..."
 
 cd $WORKDIR
 
-python manage.py db init
-python manage.py db migrate
 python manage.py db upgrade
 
-echo "> Migration successful"
+echo "> Upgrade successful"
 
 echo "> Starting backend ..."
 
