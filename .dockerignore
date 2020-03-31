@@ -1,0 +1,7 @@
+/data/
+/nginx/
+/.dockerignore
+/.gitignore
+/LICENSE
+/Procfile
+/README.md

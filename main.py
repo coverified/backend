@@ -17,6 +17,6 @@ app = create_app(env_name)
 
 
 if __name__ == '__main__':
-    port = os.getenv('API_PORT')
+    port = os.getenv('PORT')
     # run backend app
     app.run(host='0.0.0.0', port=port, use_reloader=False)

@@ -6,18 +6,17 @@ echo "> Running start script..."
 
 echo "> Wait for database on $DATABASE_SERVER to be ready..."
 
-/wait-for-it.sh $DATABASE_SERVER:5432 --timeout=120
+[ ! -z "$DATABASE_SERVER" ] && $WORKDIR/sh/wait-for-it.sh $DATABASE_SERVER:5432 --timeout=120
 
 echo "> database seems to be ready..."
 
-echo "> Migrating database model..."
+echo "> Upgrading database model..."
 
-cd /app
-python manage_db.py db init
-python manage_db.py db migrate
-python manage_db.py db upgrade
+cd $WORKDIR
 
-echo "> Migration successful"
+python manage.py db upgrade
+
+echo "> Upgrade successful"
 
 echo "> Starting backend ..."
 
