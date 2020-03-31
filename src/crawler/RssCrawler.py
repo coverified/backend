@@ -31,7 +31,7 @@ def create_crawler(filter_words, feed_urls):
 
     # crawl once on startup
     for job in scheduler.get_jobs():
-        job.modify(next_run_time=dt.datetime.utcnow())
+        job.modify(next_run_time=(dt.datetime.utcnow() + dt.timedelta(minutes=2)))
 
     scheduler.start()
 
