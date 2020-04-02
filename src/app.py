@@ -1,6 +1,8 @@
 # src/app.py
 import json
 
+import logging as log
+
 from flask import Flask
 
 from .config import app_config
@@ -31,9 +33,14 @@ def create_app(env_name):
     config = configparser.ConfigParser()
     config.read('cfg/config.cfg')
 
+    # configure logger
+    log.basicConfig(format='%(asctime)s %(levelname)s {%(module)s} [%(funcName)s] %(message)s',
+                    datefmt='%Y-%m-%d,%H:%M:%S:%f', level=log.INFO)
+
     # debug
     if app_config[env_name].DEBUG:
-        app.after_request(sql_debug)
+        app.after_request(sql_debug)  # debug sql queries
+        log.basicConfig(level=log.DEBUG)  # debugp log enabled
 
     # initializing db
     db.init_app(app)
