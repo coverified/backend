@@ -3,6 +3,8 @@ from . import db
 from marshmallow import fields, Schema
 import datetime as dt
 
+from src.app import log
+
 
 class FeedDataModel(db.Model):
     """
@@ -44,6 +46,9 @@ class FeedDataModel(db.Model):
         exist = FeedDataModel.query.filter(FeedDataModel.title == self.title).scalar() is not None
         if not exist:
             self.save()
+            log.info("Persisted entry with title " + self.title)
+        else:
+            log.info("Entry with title " + self.title + " already exists in database. Skipping!")
 
     @staticmethod
     def get_entries(start_date, end_date, limit):

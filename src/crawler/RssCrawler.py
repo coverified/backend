@@ -46,7 +46,7 @@ def crawl_and_persist_data():
     try:
         log.info("Collecting data from rss feeds...")
         rss_data_list = crawl_rss_data()
-        log.info("Data from rss feeds collected.")
+        log.info("Collected " + str(len(rss_data_list)) + " elements.")
         log.info("Persisting collected data to database...")
         for feed_entry in rss_data_list:
             build_feed_data_and_persist(feed_entry)
