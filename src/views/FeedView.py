@@ -37,6 +37,7 @@ def feed_request():
 @feed_api.after_request
 def add_header(response):
     response.cache_control.max_age = 3600
+    response.access_control_allow_origin = "*"
     if 'Expires' not in response.headers:  # set expires date in iso format
         response.headers['Expires'] = dt.datetime.utcnow().isoformat()
     return response
