@@ -6,7 +6,7 @@ import feedparser
 import lxml.html
 import datetime as dt
 
-import logging as log
+from src.app import log
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy.exc import OperationalError as SQOperationalError
@@ -19,6 +19,7 @@ feeds = []
 
 
 def create_crawler(filter_words, feed_urls):
+    log.info("Starting rss crawler...")
     # set the global vals
     global keywords
     keywords = filter_words
@@ -37,17 +38,21 @@ def create_crawler(filter_words, feed_urls):
     for job in scheduler.get_jobs():
         job.modify(next_run_time=(dt.datetime.utcnow() + dt.timedelta(minutes=2)))
 
+    log.info("Rss crawler startup successful!")
     scheduler.start()
 
 
 def crawl_and_persist_data():
     try:
+        log.info("Collecting data from rss feeds...")
         rss_data_list = crawl_rss_data()
-
+        log.info("Data from rss feeds collected.")
+        log.info("Persisting collected data to database...")
         for feed_entry in rss_data_list:
             build_feed_data_and_persist(feed_entry)
     except (SQOperationalError, PsyOperationalError) as e:
         log.error("Persisting data from crawled feed failed with exception: " + str(e))
+    log.info("Successfully persisted rss feed data to database!")
 
 
 def build_feed_data_and_persist(feed_entry):
