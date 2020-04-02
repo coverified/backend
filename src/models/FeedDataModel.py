@@ -48,7 +48,7 @@ class FeedDataModel(db.Model):
             self.save()
             log.info("Persisted entry with title " + self.title)
         else:
-            log.info("Entry with title " + self.title + " already exists in database. Skipping!")
+            log.info("Skipping entry with title " + self.title + " as it already exists!")
 
     @staticmethod
     def get_entries(start_date, end_date, limit):

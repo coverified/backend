@@ -29,18 +29,21 @@ def create_app(env_name):
     app = Flask(__name__)
     app.config.from_object(app_config[env_name])
 
+    # defaults
+    log_level = log.INFO
+
     # read config
     config = configparser.ConfigParser()
     config.read('cfg/config.cfg')
 
-    # configure logger
-    log.basicConfig(format='%(asctime)s %(levelname)s {%(module)s} [%(funcName)s] %(message)s',
-                    datefmt='%Y-%m-%d,%H:%M:%S:%f', level=log.INFO)
-
     # debug
     if app_config[env_name].DEBUG:
         app.after_request(sql_debug)  # debug sql queries
-        log.basicConfig(level=log.DEBUG)  # debugp log enabled
+        log_level = log.DEBUG  # debug log enabled
+
+    # configure logger
+    log.basicConfig(format='%(asctime)s %(levelname)s {%(module)s} [%(funcName)s] %(message)s',
+                    datefmt='%Y-%m-%d,%H:%M:%S:%f', level=log_level)
 
     # initializing db
     db.init_app(app)

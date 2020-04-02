@@ -17,8 +17,8 @@ feed_schema = FeedSchema()
 @feed_api.route('/', methods=['GET'])
 def feed_request():
     try:
-        start_date = parse(request.args.get("start"), fuzzy=True)
-        end_date = parse(request.args.get("end"), fuzzy=True)
+        start_date = parse(request.args.get("start"), fuzzy=True,dayfirst=True)
+        end_date = parse(request.args.get("end"), fuzzy=True, dayfirst=True)
         limit = int(request.args.get("limit"))
     except (ValueError, OverflowError, TypeError) as e:
         return custom_response(str(e), 400)
