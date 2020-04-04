@@ -55,6 +55,10 @@ class FeedDataModel(db.Model):
         return FeedDataModel.query.filter(
             FeedDataModel.timestamp.between(start_date, end_date)).limit(limit).all()
 
+    @staticmethod
+    def get_latest(n):
+        return FeedDataModel.query.order_by(FeedDataModel.timestamp.desc()).limit(n).all()
+
 
 class FeedSchema(Schema):
     tid = fields.Int(dump_only=True)

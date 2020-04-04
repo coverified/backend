@@ -17,7 +17,7 @@ feed_schema = FeedSchema()
 @feed_api.route('/', methods=['GET'])
 def feed_request():
     try:
-        start_date = parse(request.args.get("start"), fuzzy=True,dayfirst=True)
+        start_date = parse(request.args.get("start"), fuzzy=True, dayfirst=True)
         end_date = parse(request.args.get("end"), fuzzy=True, dayfirst=True)
         limit = int(request.args.get("limit"))
     except (ValueError, OverflowError, TypeError) as e:
@@ -32,6 +32,20 @@ def feed_request():
         return custom_response([], 400)  # return empty list
     feed_data = [feed_schema.dump(element) for element in feed_elements]
     return custom_response(feed_data, 200)  # return data
+
+
+@feed_api.route('/latest/<int:n>', methods=['GET'])
+def get_latest(n):
+    try:
+        feed_elements = FeedDataModel.get_latest(n)
+    except OperationalError as e:
+        return custom_response(str(e), 400)
+
+    if not feed_elements:
+        return custom_response([], 400)
+
+    feed_data = [feed_schema.dump(element) for element in feed_elements]
+    return custom_response(feed_data, 200)
 
 
 @feed_api.after_request
