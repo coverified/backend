@@ -19,3 +19,5 @@ python manage.py db upgrade
 echo "> Upgrade successful"
 
 echo "> Starting backend ..."
+
+python main.py
