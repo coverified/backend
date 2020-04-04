@@ -42,7 +42,7 @@ def create_app(env_name):
         log_level = log.DEBUG  # debug log enabled
 
     # configure logger
-    log.basicConfig(format='%(asctime)s %(levelname)s {%(module)s} [%(funcName)s] %(message)s',
+    log.basicConfig(format='[%(asctime)s] [%(module)s] [%(levelname)s] [%(funcName)s] %(message)s',
                     datefmt='%Y-%m-%d,%H:%M:%S:%f', level=log_level)
 
     # initializing db
