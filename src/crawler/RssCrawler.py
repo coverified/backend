@@ -1,15 +1,11 @@
 # /src/views/CrawlerView
-import time
-import atexit
 
 import feedparser
 import lxml.html
-import datetime as dt
 
 from src.app import log
 
-from apscheduler.schedulers.background import BackgroundScheduler
-from sqlalchemy.exc import OperationalError as SQOperationalError
+from sqlalchemy.exc import OperationalError as SQOperationalError, ProgrammingError
 from psycopg2 import OperationalError as PsyOperationalError
 
 from src.models import FeedDataModel
@@ -19,7 +15,7 @@ feeds = []
 
 
 def create_crawler(filter_words, feed_urls):
-    log.info("Starting rss crawler...")
+    log.info("Configure rss crawler...")
     # set the global vals
     global keywords
     keywords = filter_words
@@ -27,22 +23,11 @@ def create_crawler(filter_words, feed_urls):
     global feeds
     feeds = feed_urls
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=crawl_and_persist_data, trigger="interval",
-                      seconds=3600)
-
-    # Shut down the scheduler when exiting the app
-    atexit.register(lambda: scheduler.shutdown())
-
-    # crawl once on startup
-    for job in scheduler.get_jobs():
-        job.modify(next_run_time=(dt.datetime.utcnow() + dt.timedelta(minutes=2)))
-
-    log.info("Rss crawler startup successful!")
-    scheduler.start()
+    log.info("Successfully configured rss crawler!")
 
 
 def crawl_and_persist_data():
+    success = bool(False)
     try:
         log.info("Collecting data from rss feeds...")
         rss_data_list = crawl_rss_data()
@@ -50,13 +35,16 @@ def crawl_and_persist_data():
         log.info("Persisting collected data to database...")
         for feed_entry in rss_data_list:
             build_feed_data_and_persist(feed_entry)
-    except (SQOperationalError, PsyOperationalError) as e:
+        success = bool(True)
+    except (SQOperationalError, PsyOperationalError, ProgrammingError) as e:
         log.error("Persisting data from crawled feed failed with exception: " + str(e))
-    log.info("Successfully persisted rss feed data to database!")
+
+    if success:
+        log.info("Successfully persisted rss feed data to database!")
 
 
 def build_feed_data_and_persist(feed_entry):
-    timestamp = feed_entry.published  # todo parse
+    timestamp = feed_entry.published
     title = feed_entry.title
     content = feed_entry.summary
     url = feed_entry.link
@@ -70,10 +58,6 @@ def build_feed_data_and_persist(feed_entry):
 def crawl_rss_data():
     return list(filter(lambda x: filter_keywords(filter_html(x.title)),
                        flatten([feedparser.parse(feed_url).entries for feed_url in feeds])))
-
-
-def print_date_time():  # todo JH remove as this is debug method
-    print(time.strftime("%A, %d. %B %Y %I:%M:%S %p"))
 
 
 def filter_keywords(string):

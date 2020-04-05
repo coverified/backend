@@ -12,13 +12,13 @@ from .models import db
 
 # import feed_api blueprint
 from .views.FeedView import feed_api as feed_blueprint
+from .views.CrawlerView import crawler_api as crawler_blueprint
 
 # api limiter
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 import configparser
-
 
 def create_app(env_name):
     """
@@ -51,6 +51,7 @@ def create_app(env_name):
 
     # register the feed api blueprint
     app.register_blueprint(feed_blueprint, url_prefix='/api/v1/feed')
+    app.register_blueprint(crawler_blueprint, url_prefix='/api/v1/crawler')
 
     # start the crawler
     keywords = json.loads(config.get("crawler", "keywords"))

@@ -53,7 +53,12 @@ class FeedDataModel(db.Model):
     @staticmethod
     def get_entries(start_date, end_date, limit):
         return FeedDataModel.query.filter(
-            FeedDataModel.timestamp.between(start_date, end_date)).limit(limit).all()
+            FeedDataModel.timestamp.between(start_date, end_date)).order_by(FeedDataModel.timestamp.desc()).limit(
+            limit).all()
+
+    @staticmethod
+    def get_latest(n):
+        return FeedDataModel.query.order_by(FeedDataModel.timestamp.desc()).limit(n).all()
 
 
 class FeedSchema(Schema):
