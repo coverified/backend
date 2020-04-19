@@ -34,12 +34,20 @@ def feed_request():
     return custom_response(feed_data, 200)  # return data
 
 
-@feed_api.route('/latest/<int:n>', methods=['GET'])
-def get_latest(n):
+@feed_api.route('/latest', methods=['GET'])
+def get_latest():
+    limit = request.args.get('limit', None)
+    offset = request.args.get('offset', None)
     try:
-        feed_elements = FeedDataModel.get_latest(n)
+        limit = int(limit)
+        offset = int(offset)
+        feed_elements = FeedDataModel.get_latest(limit, offset)
     except OperationalError as e:
         return custom_response(str(e), 400)
+    except (ValueError, TypeError):
+        return custom_response(
+            "Cannot parse provided values for limit=" + str(limit) + " and offset=" + str(offset) +
+            ". Please ensure that both values are of type 'int'.", 400)
 
     if not feed_elements:
         return custom_response([], 400)
