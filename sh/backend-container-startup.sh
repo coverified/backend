@@ -20,4 +20,4 @@ echo "> Upgrade successful"
 
 echo "> Starting backend ..."
 
-python main.py
+gunicorn --bin 0.0.0.0:$PORT main:app

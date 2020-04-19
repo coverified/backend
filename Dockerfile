@@ -47,4 +47,4 @@ RUN apk add --update --upgrade --no-cache --virtual .build-deps \
 # change to the app user
 USER app
 
-CMD ["/app/sh/backend-container-startup.sh", "&&", "gunicorn", "--bin", "0.0.0.0:$PORT", "main:app"]
+CMD ["/app/sh/backend-container-startup.sh"]
