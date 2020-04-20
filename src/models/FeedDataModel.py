@@ -57,8 +57,8 @@ class FeedDataModel(db.Model):
             limit).all()
 
     @staticmethod
-    def get_latest(n):
-        return FeedDataModel.query.order_by(FeedDataModel.timestamp.desc()).limit(n).all()
+    def get_latest(limit, offset):
+        return FeedDataModel.query.order_by(FeedDataModel.timestamp.desc()).limit(limit).offset(offset).all()
 
 
 class FeedSchema(Schema):
