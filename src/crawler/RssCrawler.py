@@ -10,6 +10,8 @@ from psycopg2 import OperationalError as PsyOperationalError
 
 from src.models import FeedDataModel
 
+import html
+
 keywords = []
 feeds = []
 
@@ -45,8 +47,8 @@ def crawl_and_persist_data():
 
 def build_feed_data_and_persist(feed_entry):
     timestamp = feed_entry.published
-    title = feed_entry.title
-    content = feed_entry.summary
+    title = clean_string(feed_entry.title)
+    content = clean_string(feed_entry.summary)
     url = feed_entry.link
 
     data = {'timestamp': timestamp, 'title': title, 'content': content, 'url': url}
@@ -56,12 +58,19 @@ def build_feed_data_and_persist(feed_entry):
 
 
 def crawl_rss_data():
-    return list(filter(lambda x: filter_keywords(filter_html(x.title)),
+    return list(filter(lambda x: filter_keywords(clean_string(filter_html(x.title + x.summary))),
                        flatten([feedparser.parse(feed_url).entries for feed_url in feeds])))
 
 
 def filter_keywords(string):
     return bool(any(x in string.casefold() for x in keywords))
+
+
+def clean_string(string):
+    # we don't want soft hyphen in the db
+    soft_hyphen_html = "&#173;"
+    # we don't want line breaks in the db
+    return html.unescape(string.replace(soft_hyphen_html, "").replace("\n", " "))
 
 
 def filter_html(string):
