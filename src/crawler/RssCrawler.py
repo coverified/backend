@@ -56,7 +56,7 @@ def build_feed_data_and_persist(feed_entry):
 
 
 def crawl_rss_data():
-    return list(filter(lambda x: filter_keywords(filter_html(x.title)),
+    return list(filter(lambda x: filter_keywords(filter_html(x.title + x.summary)),
                        flatten([feedparser.parse(feed_url).entries for feed_url in feeds])))
 
 
